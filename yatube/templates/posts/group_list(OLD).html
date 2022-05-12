@@ -4,7 +4,7 @@
 {% endblock %} 
 {% block content %}
 <article>
-{% for post in page_obj %}
+{% for post in posts %}
   <ul>
     <li>
       Группа: {{ post.group }}
@@ -20,5 +20,4 @@
 {% if not forloop.last %}<hr>{% endif %}    
 {% endfor %}
 </article>
-{% include 'posts/includes/paginator.html' %}
 {% endblock %} 
