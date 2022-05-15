@@ -9,6 +9,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'about.apps.AboutConfig',
     'core.apps.CoreConfig',
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
