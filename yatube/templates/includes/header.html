@@ -6,45 +6,48 @@
         <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
         <span style="color:red">Ya</span>tube
       </a>
-      {# Добавлено в спринте #}
-
-      {% comment %}
-      Меню - список пунктов со стандартными классами Bootsrap.
-      Класс nav-pills нужен для выделения активных пунктов 
-      {% endcomment %}
+      {% with request.resolver_match.view_name as view_name %}  
       <ul class="nav nav-pills">
-        <li class="nav-item"> 
-          <a class="nav-link" href="{% url 'about:author' %}">Об авторе</a>
+        <li class="nav-item">              
+          <a class="nav-link {% if view_name  == 'about:author' %}active{% endif %}" 
+             href="{% url 'about:author' %}"
+          >
+            Об авторе
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'about:tech' %}">Технологии</a>
+          <a class="nav-link {% if view_name  == 'about:tech' %}active{% endif %}" 
+             href="{% url 'about:tech' %}"
+          >
+            Технологии
+          </a>
         </li>
-        {% comment %}
-        {% <!-- Проверка: авторизован ли пользователь? --> %}
-        <li class="nav-item"> 
-          <a class="nav-link" href="<!--  -->">Новая запись</a>
+        {% if user.is_authenticated %}
+          <a class="nav-link {% if view_name  == 'posts:post_create' %}active{% endif %}" 
+             href="{% url 'posts:post_create' %}"
+          >
+            Новая запись
+          </a>
         </li>
         <li class="nav-item"> 
-          <a class="nav-link link-light" href="<!--  -->">Изменить пароль</a>
+          <a class="nav-link link-light" href="{% url 'users:password_change_form' %}">Изменить пароль</a>
         </li>
         <li class="nav-item"> 
-          <a class="nav-link link-light" href="<!--  -->">Выйти</a>
+          <a class="nav-link link-light" href="{% url 'users:logout' %}">Выйти</a>
         </li>
         <li>
           Пользователь: {{ user.username }}
         </li>
         {% else %}
         <li class="nav-item"> 
-          <a class="nav-link link-light" href="<!--  -->">Войти</a>
+          <a class="nav-link link-light" href="{% url 'users:login' %}">Войти</a>
         </li>
         <li class="nav-item"> 
-          <a class="nav-link link-light" href="<!--  -->">Регистрация</a>
+          <a class="nav-link link-light" href="{% url 'users:signup' %}">Регистрация</a>
         </li>
         {% endif %}
-                {% endcomment %}
-
       </ul>
-      {# Конец добавленого в спринте #}
+      {% endwith %} 
     </div>
   </nav>      
 </header> 

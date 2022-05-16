@@ -1,0 +1,114 @@
+<!DOCTYPE html> 
+<html lang="ru"> 
+  <head>    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../img/fav/fav.ico" type="image">
+    <link rel="apple-touch-icon" sizes="180x180" href="../img/fav/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/fav/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/fav/favicon-16x16.png">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"> 
+    <title>Новый пост</title>
+  </head>
+  <body>	   
+    <header>
+      <nav class="navbar navbar-light" style="background-color: lightskyblue">
+        <div class="container">
+          <a class="navbar-brand" href="../posts/index.html">
+            <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+            <span style="color:red">Ya</span>tube
+          </a>        
+          <ul class="nav  nav-pills">
+            <li class="nav-item">              
+              <a class="nav-link" href="{% url 'about:author' %}">
+                Об авторе
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about:tech' %}">
+                Технологии
+              </a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link active" href="../posts/create_post.html">
+                Новая запись
+              </a>
+            </li>
+            <li class="nav-item"> 
+              <a class="nav-link link-light " href="{% url 'users:password_change_form' %}">
+                Изменить пароль
+              </a>
+            </li>
+            <li class="nav-item"> 
+              <a class="nav-link link-light" href="{% url 'users:logout' %}">Выйти</a>
+            </li>
+            <li>
+              Пользователь: {{ user.username }}
+            <li>
+            {% else %}
+            <li class="nav-item"> 
+              <a class="nav-link link-light" href="{% url 'users:login' %}">
+                Войти
+              </a>
+            </li>
+            <li class="nav-item"> 
+              <a class="nav-link link-light " href="{% url 'users:signup' %}">Регистрация</a>
+            </li>
+            {% endif %}      
+          </ul>       
+        </div>
+      </nav> 
+    </header>
+    <main>
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8 p-5">
+            <div class="card">
+              <div class="card-header">       
+                Новый пост             
+              </div>
+              <div class="card-body">        
+                <form method="post" action="../posts/create_post.html">
+                  <input type="hidden" name="csrfmiddlewaretoken" value="">            
+                  <div class="form-group row my-3 p-3">
+                    <label for="id_text">
+                      Текст поста                  
+                      <span class="required text-danger" >*</span>                  
+                    </label>
+                    <textarea name="text" cols="40" rows="10" class="form-control" required id="id_text">
+                    </textarea>                
+                    <small id="id_text-help" class="form-text text-muted">
+                      Текст нового поста
+                    </small>                  
+                  </div>            
+                  <div class="form-group row my-3 p-3">
+                    <label for="id_group">
+                      Group                  
+                    </label>
+                    <select name="group" class="form-control" id="id_group">
+                      <option value="" selected>---------</option>
+                      <option value="1">Группа: Лев Толстой – зеркало русской революции</option>
+                    </select>
+                    <small id="id_group-help" class="form-text text-muted">
+                      Группа, к которой будет относиться пост
+                    </small>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                      Добавить
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    {% include 'includes/footer.html' %}   
+  </body>
+</html>

@@ -1,100 +1,32 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Group, Post, User
-
-POSTS = 10
+from .forms import PostForm
 
 
 def index(request):
     post_list = Post.objects.all()
-    # Если порядок сортировки определен в классе Meta модели,
-    # запрос будет выглядить так:
-    # post_list = Post.objects.all()
-    # Показывать по 10 записей на странице.
     paginator = Paginator(post_list, 10) 
-
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get('page')
-
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         'page_obj': page_obj,
     }
     return render(request, 'posts/index.html', context) 
 
-#def index(request):
- #   posts = Post.objects.all()[:POSTS]
-  #  context = {
-   #     'posts': posts,
-    #}
-    #return render(request, 'posts/index.html', context)
-
-
-#def group_posts(request, slug):
-    #group = get_object_or_404(Group, slug=slug)
-    #posts = group.posts.all()[:POSTS]
-    #context = {
-        #'group': group,
-        #'posts': posts,
-    #}
-    #return render(request, 'posts/group_list.html', context)
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     post_list = group.posts.all()
     paginator = Paginator(post_list, 10)
-
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
     page_number = request.GET.get('page')
-
-    # Получаем набор записей для страницы с запрошенным номером
     page_obj = paginator.get_page(page_number)
-    # Отдаем в словаре контекста
     context = {
         'group': group,
         'page_obj': page_obj,
     }
     return render(request, 'posts/group_list.html', context)
-
-
-def user_contact(request):
-    # Проверяем, получен POST-запрос или какой-то другой:
-    if request.method == 'POST':
-        # Создаём объект формы класса ContactForm
-        # и передаём в него полученные данные
-        form = ContactForm(request.POST)
-
-        # Если все данные формы валидны - работаем с "очищенными данными" формы
-        if form.is_valid():
-            # Берём валидированные данные формы из словаря form.cleaned_data
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['body']
-            # При необходимости обрабатываем данные
-            # ...
-            # сохраняем объект в базу
-            form.save()
-            
-            # Функция redirect перенаправляет пользователя 
-            # на другую страницу сайта, чтобы защититься 
-            # от повторного заполнения формы
-            return redirect('/thank-you/')
-
-        # Если условие if form.is_valid() ложно и данные не прошли валидацию - 
-        # передадим полученный объект в шаблон,
-        # чтобы показать пользователю информацию об ошибке
-
-        # Заодно заполним все поля формы данными, прошедшими валидацию, 
-        # чтобы не заставлять пользователя вносить их повторно
-        return render(request, 'contact.html', {'form': form})
-
-    # Если пришёл не POST-запрос - создаём и передаём в шаблон пустую форму
-    # пусть пользователь напишет что-нибудь
-    form = ContactForm()
-    return render(request, 'contact.html', {'form': form})
 
 
 def profile(request, username):
@@ -123,3 +55,17 @@ def post_detail(request, post_id):
         'title': title,
     }
     return render(request, 'posts/post_detail.html', context)
+
+
+@login_required
+def post_create(request):
+    form = PostForm(request.POST or None)
+    if form.is_valid():
+        post = form.save(commite=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts:profile', post.author.username)
+    context = {
+        'form': form,
+    }
+    return render(request, 'posts/create_post.html', context)
